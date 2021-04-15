@@ -210,32 +210,54 @@ class SentenceNum extends StatelessWidget {
   SentenceNum(this.sentenceNo, {this.context});
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-        child: FractionallySizedBox(
-      child: Container(
+    var totalWidth = MediaQuery.of(context).size.width;
+
+    return Container(
         decoration: roundBoxDecoration(color: SEColorScheme.gray),
         child: Text(
           "$sentenceNo°",
           style: TextStyle(color: SEColorScheme.white, fontSize: 16),
         ),
         alignment: Alignment.center,
-      ),
-      heightFactor: 0.5,
-      widthFactor: 0.3,
-    ));
+        width: totalWidth / 10);
   }
+}
+
+Widget sentenceNumDraggable(int sentenceNum, {BuildContext context}) {
+  var totalWidth = MediaQuery.of(context).size.width;
+
+  return LayoutBuilder(
+    builder: (context, constraints) => Draggable(
+        child: SentenceNum(sentenceNum),
+        feedback: Material(
+            type: MaterialType.transparency,
+            child: Container(
+              height: constraints.maxHeight,
+              child: SentenceNum(sentenceNum),
+            )),
+        childWhenDragging: Container(width: totalWidth / 10)),
+  );
 }
 
 class SentenceNums extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [SentenceNum(1), SentenceNum(2), SentenceNum(3)],
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Center(
+      child: FractionallySizedBox(
+        child: Container(
+          child: Row(
+            children: [
+              sentenceNumDraggable(1, context: context),
+              sentenceNumDraggable(2, context: context),
+              sentenceNumDraggable(3, context: context),
+            ],
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ),
+          color: SEColorScheme.white,
+        ),
+        heightFactor: 0.5,
       ),
-      color: SEColorScheme.white,
     );
   }
 }
