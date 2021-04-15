@@ -10,7 +10,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(primaryColor: Colors.black),
+        theme: ThemeData(
+            primaryColor: SEColorScheme.black,
+            backgroundColor: SEColorScheme.white),
         home: Scaffold(
             appBar: AppBar(
               title: Text("Sintáxis Español"),
@@ -70,7 +72,7 @@ class SyntaxGame extends StatelessWidget {
 }
 
 BoxDecoration roundBoxDecoration(
-    {Color color = Colors.white,
+    {Color color = SEColorScheme.white,
     Color borderColor = Colors.transparent,
     double borderRadius = 7.5,
     double borderWidth = 1}) {
@@ -94,8 +96,7 @@ class ScoreState extends State<Score> {
         Container(
           margin: EdgeInsets.only(left: totalWidth * 0.02),
           padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-          decoration: roundBoxDecoration(
-              color: SEColorScheme.blue), //             <--- BoxDecoration here
+          decoration: roundBoxDecoration(color: SEColorScheme.blue),
           child: Text(2345.toString()),
         ),
       ],
@@ -122,7 +123,7 @@ class Instructions extends StatelessWidget {
             alignment: Alignment.center,
             widthFactor: 0.65,
             child: Text(
-              "Ordena las frases para que formen la oración correcta",
+              "Ordena las frases para que formen la oración correcta.",
               style: instructionTextStyle,
               textAlign: TextAlign.center,
             )));
@@ -174,32 +175,55 @@ class Sentence extends StatelessWidget {
   }
 }
 
+DragTarget<int> sentenceSpotDragSpot() {
+  bool accepted = false;
+  int sentenceNum;
+
+  return DragTarget<int>(
+    onWillAccept: (data) {
+      return true;
+    },
+    onAccept: (data) {
+      accepted = true;
+      sentenceNum = data;
+    },
+    builder: (context, candidateData, rejectedData) => accepted
+        ? Stack(
+            children: [SentenceSpot(), SentenceNum(sentenceNum)],
+            alignment: Alignment.center,
+          )
+        : SentenceSpot(),
+  );
+}
+
 class SentenceSpot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-        child: FractionallySizedBox(
-      child: Container(
+    var totalWidth = MediaQuery.of(context).size.width;
+
+    return Container(
         decoration:
             roundBoxDecoration(borderColor: SEColorScheme.blue, borderWidth: 4),
-      ),
-      heightFactor: 0.8,
-      widthFactor: 0.475,
-    ));
+        width: totalWidth * 0.185);
   }
 }
 
 class SentenceSpots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Center(
+        child: Container(
       child: Row(
-        children: [SentenceSpot(), SentenceSpot(), SentenceSpot()],
+        children: [
+          sentenceSpotDragSpot(),
+          sentenceSpotDragSpot(),
+          sentenceSpotDragSpot()
+        ],
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       ),
       color: SEColorScheme.lightBlue,
-    );
+    ));
   }
 }
 
@@ -211,15 +235,18 @@ class SentenceNum extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var totalWidth = MediaQuery.of(context).size.width;
+    var totalHeight = MediaQuery.of(context).size.height;
 
     return Container(
-        decoration: roundBoxDecoration(color: SEColorScheme.gray),
-        child: Text(
-          "$sentenceNo°",
-          style: TextStyle(color: SEColorScheme.white, fontSize: 16),
-        ),
-        alignment: Alignment.center,
-        width: totalWidth / 10);
+      decoration: roundBoxDecoration(color: SEColorScheme.gray),
+      child: Text(
+        "$sentenceNo°",
+        style: TextStyle(color: SEColorScheme.white, fontSize: 16),
+      ),
+      alignment: Alignment.center,
+      width: totalWidth / 10,
+      height: totalHeight / 22,
+    );
   }
 }
 
@@ -227,7 +254,8 @@ Widget sentenceNumDraggable(int sentenceNum, {BuildContext context}) {
   var totalWidth = MediaQuery.of(context).size.width;
 
   return LayoutBuilder(
-    builder: (context, constraints) => Draggable(
+    builder: (context, constraints) => Draggable<int>(
+        data: sentenceNum,
         child: SentenceNum(sentenceNum),
         feedback: Material(
             type: MaterialType.transparency,
@@ -254,7 +282,7 @@ class SentenceNums extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           ),
-          color: SEColorScheme.white,
+          color: Colors.transparent,
         ),
         heightFactor: 0.5,
       ),
