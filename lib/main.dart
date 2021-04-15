@@ -1,113 +1,241 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:sintaxis_espanol/variables.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        theme: ThemeData(primaryColor: Colors.black),
+        home: Scaffold(
+            appBar: AppBar(
+              title: Text("Sintáxis Español"),
+            ),
+            body: SyntaxGame()));
+  }
+}
+
+class SyntaxGame extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.transparent,
+      child: LayoutGrid(
+        areas: '''
+        score
+        instructions
+        sentence-nums
+        sentence-spots
+        .
+        sentence-1
+        .
+        sentence-2
+        .
+        sentence-3
+        .
+        ''',
+        columnSizes: [1.fr],
+        rowSizes: [
+          (1.2).fr,
+          (0.9).fr,
+          (0.8).fr,
+          (0.8).fr,
+          (0.325).fr,
+          (0.5).fr,
+          (0.4).fr,
+          (0.5).fr,
+          (0.4).fr,
+          (0.5).fr,
+          (1.8).fr,
+        ],
+        columnGap: 0.00,
+        rowGap: 0.00,
+        children: [
+          Score().inGridArea("score"),
+          Instructions().inGridArea("instructions"),
+          SentenceNums().inGridArea("sentence-nums"),
+          SentenceSpots().inGridArea("sentence-spots"),
+          Sentence(1, "Tiene").inGridArea("sentence-1"),
+          Sentence(2, "Una de cada seis estrellas del tamaño de nuestro sol")
+              .inGridArea("sentence-2"),
+          Sentence(3, "Un planeta similar al nuestro").inGridArea("sentence-3"),
+        ],
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
+BoxDecoration roundBoxDecoration(
+    {Color color = Colors.white,
+    Color borderColor = Colors.transparent,
+    double borderRadius = 7.5,
+    double borderWidth = 1}) {
+  return BoxDecoration(
+      border: Border.all(color: borderColor, width: borderWidth),
+      borderRadius: BorderRadius.circular(borderRadius),
+      color: color);
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class ScoreState extends State<Score> {
+  @override
+  Widget build(BuildContext context) {
+    var totalWidth = MediaQuery.of(context).size.width;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    return Row(
+      children: [
+        Container(
+            child: Text("Puntuación"),
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(left: totalWidth * 0.05)),
+        Container(
+          margin: EdgeInsets.only(left: totalWidth * 0.02),
+          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+          decoration: roundBoxDecoration(
+              color: SEColorScheme.blue), //             <--- BoxDecoration here
+          child: Text(2345.toString()),
+        ),
+      ],
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+    );
   }
+}
+
+class Score extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return ScoreState();
+  }
+}
+
+TextStyle instructionTextStyle = new TextStyle(fontSize: 17);
+
+class Instructions extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: FractionallySizedBox(
+            alignment: Alignment.center,
+            widthFactor: 0.65,
+            child: Text(
+              "Ordena las frases para que formen la oración correcta",
+              style: instructionTextStyle,
+              textAlign: TextAlign.center,
+            )));
+  }
+}
+
+class Sentence extends StatelessWidget {
+  Sentence(this.sentenceNo, this.text);
+  final String text;
+  final int sentenceNo;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+    var totalWidth = MediaQuery.of(context).size.width;
+
+    return Center(
+        child: Stack(alignment: Alignment.centerRight, children: [
+      FractionallySizedBox(
+        widthFactor: 0.85,
+        child: Container(
+            decoration: roundBoxDecoration(color: SEColorScheme.gray),
+            child: FractionallySizedBox(
+                child: Container(
+                    child: Text(
+                      "$sentenceNo°",
+                      style: TextStyle(fontSize: 17),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.only(left: totalWidth * 0.075)),
+                heightFactor: 1)),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      FractionallySizedBox(
+          alignment: Alignment.centerRight,
+          widthFactor: 0.65,
+          child: Container(
+            decoration: roundBoxDecoration(color: SEColorScheme.black),
+            child: FractionallySizedBox(
+                child: Container(
+                    child: Text(
+                      "$text",
+                      style:
+                          TextStyle(fontSize: 11, color: SEColorScheme.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    alignment: Alignment.center),
+                heightFactor: 1),
+          ))
+    ]));
+  }
+}
+
+class SentenceSpot extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+        child: FractionallySizedBox(
+      child: Container(
+        decoration:
+            roundBoxDecoration(borderColor: SEColorScheme.blue, borderWidth: 4),
+      ),
+      heightFactor: 0.8,
+      widthFactor: 0.475,
+    ));
+  }
+}
+
+class SentenceSpots extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [SentenceSpot(), SentenceSpot(), SentenceSpot()],
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      ),
+      color: SEColorScheme.lightBlue,
+    );
+  }
+}
+
+class SentenceNum extends StatelessWidget {
+  final int sentenceNo;
+  final BuildContext context;
+
+  SentenceNum(this.sentenceNo, {this.context});
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+        child: FractionallySizedBox(
+      child: Container(
+        decoration: roundBoxDecoration(color: SEColorScheme.gray),
+        child: Text(
+          "$sentenceNo°",
+          style: TextStyle(color: SEColorScheme.white, fontSize: 16),
         ),
+        alignment: Alignment.center,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      heightFactor: 0.5,
+      widthFactor: 0.3,
+    ));
+  }
+}
+
+class SentenceNums extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [SentenceNum(1), SentenceNum(2), SentenceNum(3)],
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      ),
+      color: SEColorScheme.white,
     );
   }
 }
