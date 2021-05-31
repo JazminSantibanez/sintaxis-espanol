@@ -1,6 +1,9 @@
 import "package:flutter/material.dart";
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sintaxis_espanol/databaseHelper.dart';
 import 'package:sintaxis_espanol/variables.dart';
+import 'package:sqflite/sqflite.dart';
 
 
 class SyntaxGame extends StatelessWidget {
@@ -36,7 +39,7 @@ class Game extends StatelessWidget {
         sentence-2
         .
         sentence-3
-        .
+        buttonCheck
         ''',
         columnSizes: [1.fr],
         rowSizes: [
@@ -63,6 +66,7 @@ class Game extends StatelessWidget {
           Sentence(2, "Una de cada seis estrellas del tamaño de nuestro sol")
               .inGridArea("sentence-2"),
           Sentence(3, "Un planeta similar al nuestro").inGridArea("sentence-3"),
+          ButtonCheck().inGridArea("buttonCheck"),
         ],
       ),
     );
@@ -157,13 +161,13 @@ class Sentence extends StatelessWidget {
           alignment: Alignment.centerRight,
           widthFactor: 0.65,
           child: Container(
-            decoration: roundBoxDecoration(color: SEColorScheme.black),
+            decoration: roundBoxDecoration(color: SEColorScheme.lightBlue),
             child: FractionallySizedBox(
                 child: Container(
                     child: Text(
                       "$text",
                       style:
-                          TextStyle(fontSize: 11, color: SEColorScheme.white),
+                          TextStyle(fontSize: 11, color: SEColorScheme.black),
                       textAlign: TextAlign.center,
                     ),
                     alignment: Alignment.center),
@@ -283,6 +287,42 @@ class SentenceNums extends StatelessWidget {
           color: Colors.transparent,
         ),
         heightFactor: 0.5,
+      ),
+    );
+  }
+}
+
+TextStyle buttonTStyle = new TextStyle(color:SEColorScheme.white,fontSize: 15,);
+TextStyle toastStyle = new TextStyle(color:SEColorScheme.white,fontSize: 25,);
+class ButtonCheck extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: <Widget>[
+           TextButton(
+              onPressed: ()async{
+                
+                    Fluttertoast.showToast(
+                    msg: '¡Correcto!🥳',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: SEColorScheme.white,
+                    textColor: SEColorScheme.gray,
+                    fontSize: 40,
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text('Comprobar', style: buttonTStyle,),
+              ),
+              style: TextButton.styleFrom(
+                backgroundColor: SEColorScheme.black,
+                shape: StadiumBorder(),
+              ),
+            )
+         ],
       ),
     );
   }
