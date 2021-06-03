@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sintaxis_espanol/game.dart';
 import 'package:sintaxis_espanol/variables.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:math';
 
 import 'databaseHelper.dart';
 
@@ -64,8 +66,11 @@ class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Image.asset("assets/images/sintaxlogo.png", height: 100,
-                         width: 400, fit: BoxFit.fitWidth,)
+        child: Padding(
+          padding: const EdgeInsets.only(top:55.0),
+          child: Image.asset("assets/images/sintaxlogo.png", height: 100,
+                           width: 400, fit: BoxFit.fitWidth,),
+        )
             );
   }
 }
@@ -84,6 +89,7 @@ class ButtonGame extends StatelessWidget {
              Image.asset("assets/icons/prize.png",height: 80,
                              width: 80, fit: BoxFit.fitWidth,),
             TextButton(
+              
               onPressed: (){
                 Navigator.of(context).push( 
                   MaterialPageRoute(
@@ -122,9 +128,6 @@ class ButtonStreak extends StatelessWidget {
                              width: 80, fit: BoxFit.fitWidth,),
             TextButton(
               onPressed: ()async{
-
-                List<Map<String,dynamic>> queryrows = await DatabaseHelper.instance.queryAll();
-                print(queryrows);
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),

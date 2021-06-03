@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import "package:flutter/material.dart";
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -5,10 +7,11 @@ import 'package:sintaxis_espanol/databaseHelper.dart';
 import 'package:sintaxis_espanol/variables.dart';
 import 'package:sqflite/sqflite.dart';
 
+Set<int> setOfInts = Set();
 
 class SyntaxGame extends StatelessWidget {
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
       body: Game(),
@@ -17,14 +20,80 @@ class SyntaxGame extends StatelessWidget {
 
   AppBar buildAppBar() {
     return AppBar(
-            title: Text("Sintáxis Español"),
-          );
+      title: Text("Sintáxis Español"),
+    );
   }
 }
+
+class SentenceStr {
+  String type;
+  String content;
+  int num;
+
+  SentenceStr(this.num, this.type, this.content);
+
+  @override
+  String toString() {
+    return '{ ${this.num},${this.type}, ${this.content} }';
+  }
+}
+
+void randomSentence() async {
+  int queryrows = await DatabaseHelper.instance.numRows();
+
+  // Del total de número obtener un número random que no re repita
+  Random random = new Random();
+  int randomNumber = random.nextInt(queryrows) + 1;
+
+  while (setOfInts.contains(randomNumber)) {
+    randomNumber = random.nextInt(queryrows) + 1;
+  }
+  setOfInts.add(randomNumber);
+
+  // obtener la fila que contiene el id del número random generado
+  List<Map<String, dynamic>> s =
+      await DatabaseHelper.instance.getSentencetById(randomNumber);
+  print(s);
+
+  // obtener cantidad de elementos que contiene la oración
+  int qsentences = s.elementAt(0).values.elementAt(1);
+  print(qsentences);
+
+  // crear una lista que incluya el número de elementos de la lista
+  int i = 0, cont = 0;
+  List elemSen = [];
+  Set<int> setOfInts2 = Set();
+
+  while (cont < qsentences) {
+    if (s.elementAt(0).values.elementAt(2 + i) != null) {
+      String t = s.elementAt(0).keys.elementAt(2 + i);
+      String c = s.elementAt(0).values.elementAt(2 + i);
+
+      Random random2 = new Random();
+      int randomNumber2 = random2.nextInt(qsentences) + 1;
+
+      while (setOfInts2.contains(randomNumber2)) {
+        randomNumber2 = random2.nextInt(qsentences) + 1;
+      }
+
+      setOfInts2.add(randomNumber2);
+
+      elemSen.add(SentenceStr(randomNumber2, t, c));
+      cont++;
+    }
+    i++;
+  }
+  // se ordena la lista
+  elemSen.sort((a, b) => a.num.compareTo(b.num));
+  print(elemSen);
+  //return elemSen;
+}
+
 class Game extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    
+    randomSentence();
+
     return Container(
       color: Colors.transparent,
       child: LayoutGrid(
@@ -292,37 +361,46 @@ class SentenceNums extends StatelessWidget {
   }
 }
 
-TextStyle buttonTStyle = new TextStyle(color:SEColorScheme.white,fontSize: 15,);
-TextStyle toastStyle = new TextStyle(color:SEColorScheme.white,fontSize: 25,);
+TextStyle buttonTStyle = new TextStyle(
+  color: SEColorScheme.white,
+  fontSize: 15,
+);
+TextStyle toastStyle = new TextStyle(
+  color: SEColorScheme.white,
+  fontSize: 25,
+);
+
 class ButtonCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-         mainAxisAlignment: MainAxisAlignment.center,
-         children: <Widget>[
-           TextButton(
-              onPressed: ()async{
-                
-                    Fluttertoast.showToast(
-                    msg: '¡Correcto!🥳',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: SEColorScheme.white,
-                    textColor: SEColorScheme.gray,
-                    fontSize: 40,
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text('Comprobar', style: buttonTStyle,),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          TextButton(
+            onPressed: () async {
+              Fluttertoast.showToast(
+                msg: '¡Correcto!🥳',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: SEColorScheme.white,
+                textColor: SEColorScheme.gray,
+                fontSize: 40,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Comprobar',
+                style: buttonTStyle,
               ),
-              style: TextButton.styleFrom(
-                backgroundColor: SEColorScheme.black,
-                shape: StadiumBorder(),
-              ),
-            )
-         ],
+            ),
+            style: TextButton.styleFrom(
+              backgroundColor: SEColorScheme.black,
+              shape: StadiumBorder(),
+            ),
+          )
+        ],
       ),
     );
   }

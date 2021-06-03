@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:sintaxis_espanol/game.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -10,7 +11,7 @@ class DatabaseHelper {
   static final _dbVersion = 1;
   static final _tableName = 'Sentence';
 
-  static final columnId = '#';
+  static final columnId = '"#"';
   static final columnName = 'name';
 
   DatabaseHelper._privateConstructor();
@@ -56,10 +57,6 @@ class DatabaseHelper {
     return await db.insert(_tableName, row);
   }
 
-  Future<List<Map<String, dynamic>>> queryAll() async {
-    Database db = await instance.database;
-    return await db.query(_tableName);
-  }
 
   Future update(Map<String, dynamic> row) async {
     Database db = await instance.database;
@@ -72,4 +69,20 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(_tableName, where: '$columnId = ?', whereArgs: [id]);
   }
+
+  Future<List<Map<String, dynamic>>> queryAll() async {
+    Database db = await instance.database;
+    return await db.query(_tableName);
+  }
+  Future<int> numRows() async{
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM Sentence'));
+  }
+
+  Future<List<Map<String, dynamic>>> getSentencetById(int id) async {
+    Database db = await instance.database; 
+    //var result = await db.query("Sentence", where: "id = ", whereArgs: [id]); 
+    return await db.rawQuery('SELECT * FROM Sentence WHERE "#" = $id ');
+    //return result.isNotEmpty ? Sentence.fromMap(result.first) : Null; 
+  } 
 }
