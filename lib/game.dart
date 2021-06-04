@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sintaxis_espanol/databaseHelper.dart';
 import 'package:sintaxis_espanol/variables.dart';
 import 'package:sqflite/sqflite.dart';
+//import 'package:sintaxis_espanol/globals.dart' as globals;
 
 Set<int> setOfInts = Set();
 
@@ -38,7 +39,7 @@ class SentenceStr {
   }
 }
 
-void randomSentence() async {
+Future<List<SentenceStr>> randomSentence() async {
   int queryrows = await DatabaseHelper.instance.numRows();
 
   // Del total de número obtener un número random que no re repita
@@ -61,7 +62,7 @@ void randomSentence() async {
 
   // crear una lista que incluya el número de elementos de la lista
   int i = 0, cont = 0;
-  List elemSen = [];
+  List<SentenceStr> elemSen = [];
   Set<int> setOfInts2 = Set();
 
   while (cont < qsentences) {
@@ -78,67 +79,74 @@ void randomSentence() async {
 
       setOfInts2.add(randomNumber2);
 
-      elemSen.add(SentenceStr(randomNumber2, t, c));
+      elemSen.add(SentenceStr(cont+1, t, c));
       cont++;
     }
     i++;
   }
   // se ordena la lista
-  elemSen.sort((a, b) => a.num.compareTo(b.num));
+  elemSen.shuffle();
+  //globals.elelist=elemSen;
   print(elemSen);
-  //return elemSen;
+  return elemSen;
 }
 
 class Game extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    randomSentence();
+    Future<List<SentenceStr>> lista = randomSentence();
+    print(lista);
 
-    return Container(
-      color: Colors.transparent,
-      child: LayoutGrid(
-        areas: '''
+    return FutureBuilder<List<SentenceStr>>(
+        future: lista,
+        builder: (context, AsyncSnapshot<List<SentenceStr>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+              color: Colors.transparent,
+              child: LayoutGrid(
+                areas: '''
         score
         instructions
         sentence-nums
         sentence-spots
         .
-        sentence-1
-        .
-        sentence-2
-        .
-        sentence-3
+        sentence-parts
         buttonCheck
         ''',
-        columnSizes: [1.fr],
-        rowSizes: [
-          (1.2).fr,
-          (0.9).fr,
-          (0.8).fr,
-          (0.8).fr,
-          (0.325).fr,
-          (0.5).fr,
-          (0.4).fr,
-          (0.5).fr,
-          (0.4).fr,
-          (0.5).fr,
-          (1.8).fr,
-        ],
-        columnGap: 0.00,
-        rowGap: 0.00,
-        children: [
-          Score().inGridArea("score"),
-          Instructions().inGridArea("instructions"),
-          SentenceNums().inGridArea("sentence-nums"),
-          SentenceSpots().inGridArea("sentence-spots"),
-          Sentence(1, "Tiene").inGridArea("sentence-1"),
-          Sentence(2, "Una de cada seis estrellas del tamaño de nuestro sol")
-              .inGridArea("sentence-2"),
-          Sentence(3, "Un planeta similar al nuestro").inGridArea("sentence-3"),
-          ButtonCheck().inGridArea("buttonCheck"),
-        ],
-      ),
-    );
+                columnSizes: [1.fr],
+                rowSizes: [
+                  (1.2).fr,
+                  (0.9).fr,
+                  (0.8).fr,
+                  (0.8).fr,
+                  (0.325).fr,
+                  (2.3).fr,
+                  (1.8).fr,
+                ],
+                columnGap: 0.00,
+                rowGap: 0.00,
+                children: [
+                  Score().inGridArea("score"),
+                  Instructions().inGridArea("instructions"),
+                  SentenceNums(snapshot.data.length)
+                      .inGridArea("sentence-nums"),
+                  SentenceSpots(snapshot.data.length)
+                      .inGridArea("sentence-spots"),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      for (int i = 0; i < snapshot.data.length; i++)
+                        Container(child: Sentence(i + 1, snapshot.data[i].content), width: double.infinity, height: (MediaQuery.of(context).size.height * 0.28307692307 / (snapshot.data.length + 1)))
+                    ],
+                  ).inGridArea("sentence-parts"),
+                  ButtonCheck().inGridArea("buttonCheck"),
+                ],
+              ),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
   }
 }
 
@@ -249,6 +257,7 @@ class Sentence extends StatelessWidget {
 DragTarget<int> sentenceSpotDragSpot() {
   bool accepted = false;
   int sentenceNum;
+ 
 
   return DragTarget<int>(
     onWillAccept: (data) {
@@ -280,15 +289,15 @@ class SentenceSpot extends StatelessWidget {
 }
 
 class SentenceSpots extends StatelessWidget {
+  final int sentenceCount;
+  SentenceSpots(this.sentenceCount);
   @override
   Widget build(BuildContext context) {
     return Center(
         child: Container(
       child: Row(
         children: [
-          sentenceSpotDragSpot(),
-          sentenceSpotDragSpot(),
-          sentenceSpotDragSpot()
+          for (int i = 0; i < sentenceCount; i++) sentenceSpotDragSpot(),
         ],
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -339,6 +348,8 @@ Widget sentenceNumDraggable(int sentenceNum, {BuildContext context}) {
 }
 
 class SentenceNums extends StatelessWidget {
+  final int sentenceCount;
+  SentenceNums(this.sentenceCount);
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -346,9 +357,8 @@ class SentenceNums extends StatelessWidget {
         child: Container(
           child: Row(
             children: [
-              sentenceNumDraggable(1, context: context),
-              sentenceNumDraggable(2, context: context),
-              sentenceNumDraggable(3, context: context),
+              for (int i = 1; i <= sentenceCount; i++)
+                sentenceNumDraggable(i, context: context),
             ],
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -379,6 +389,7 @@ class ButtonCheck extends StatelessWidget {
         children: <Widget>[
           TextButton(
             onPressed: () async {
+            
               Fluttertoast.showToast(
                 msg: '¡Correcto!🥳',
                 toastLength: Toast.LENGTH_SHORT,
