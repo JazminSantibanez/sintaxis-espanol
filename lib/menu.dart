@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sintaxis_espanol/game.dart';
 import 'package:sintaxis_espanol/variables.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
-import 'package:sqflite/sqflite.dart';
-import 'dart:math';
 
-import 'databaseHelper.dart';
 
 
 class Menu extends StatelessWidget {

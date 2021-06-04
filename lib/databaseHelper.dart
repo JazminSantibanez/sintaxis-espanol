@@ -2,13 +2,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:sintaxis_espanol/game.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
   static final _dbName = 'game.db';
-  static final _dbVersion = 1;
   static final _tableName = 'Sentence';
 
   static final columnId = '"#"';
