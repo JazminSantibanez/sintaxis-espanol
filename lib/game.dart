@@ -5,7 +5,6 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sintaxis_espanol/databaseHelper.dart';
 import 'package:sintaxis_espanol/variables.dart';
-import 'package:sqflite/sqflite.dart';
 //import 'package:sintaxis_espanol/globals.dart' as globals;
 
 Set<int> setOfInts = Set();
@@ -21,7 +20,7 @@ class SyntaxGame extends StatelessWidget {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text("Sintáxis Español"),
+      title: Text("Atrás"),
     );
   }
 }
@@ -63,21 +62,11 @@ Future<List<SentenceStr>> randomSentence() async {
   // crear una lista que incluya el número de elementos de la lista
   int i = 0, cont = 0;
   List<SentenceStr> elemSen = [];
-  Set<int> setOfInts2 = Set();
 
   while (cont < qsentences) {
     if (s.elementAt(0).values.elementAt(2 + i) != null) {
       String t = s.elementAt(0).keys.elementAt(2 + i);
       String c = s.elementAt(0).values.elementAt(2 + i);
-
-      Random random2 = new Random();
-      int randomNumber2 = random2.nextInt(qsentences) + 1;
-
-      while (setOfInts2.contains(randomNumber2)) {
-        randomNumber2 = random2.nextInt(qsentences) + 1;
-      }
-
-      setOfInts2.add(randomNumber2);
 
       elemSen.add(SentenceStr(cont+1, t, c));
       cont++;
@@ -128,7 +117,7 @@ class Game extends StatelessWidget {
                 children: [
                   Score().inGridArea("score"),
                   Instructions().inGridArea("instructions"),
-                  SentenceNums(snapshot.data.length)
+                  SentenceNums(snapshot.data)
                       .inGridArea("sentence-nums"),
                   SentenceSpots(snapshot.data.length)
                       .inGridArea("sentence-spots"),
@@ -254,22 +243,30 @@ class Sentence extends StatelessWidget {
   }
 }
 
-DragTarget<int> sentenceSpotDragSpot() {
+DragTarget<List> sentenceSpotDragSpot(int id) {
+
   bool accepted = false;
-  int sentenceNum;
+  int sentencePartNum;
+  int sentenceNo;
  
 
-  return DragTarget<int>(
+  return DragTarget<List>(
     onWillAccept: (data) {
       return true;
     },
     onAccept: (data) {
       accepted = true;
-      sentenceNum = data;
+      sentencePartNum = data.elementAt(0);
+      sentenceNo = data.elementAt(1);
+      if(id == sentencePartNum){
+        SentenceSpots.answers[id]=true;
+        print(SentenceSpots.answers[id].toString());
+      }
+      
     },
     builder: (context, candidateData, rejectedData) => accepted
         ? Stack(
-            children: [SentenceSpot(), SentenceNum(sentenceNum)],
+            children: [SentenceSpot(), SentenceNum(sentenceNo)],
             alignment: Alignment.center,
           )
         : SentenceSpot(),
@@ -290,14 +287,17 @@ class SentenceSpot extends StatelessWidget {
 
 class SentenceSpots extends StatelessWidget {
   final int sentenceCount;
+    static var  answers;
   SentenceSpots(this.sentenceCount);
   @override
   Widget build(BuildContext context) {
+    answers = List.filled(sentenceCount+1, false);
+    answers[0]=true; 
     return Center(
         child: Container(
       child: Row(
         children: [
-          for (int i = 0; i < sentenceCount; i++) sentenceSpotDragSpot(),
+          for (int i = 0; i < sentenceCount; i++) sentenceSpotDragSpot(i+1),
         ],
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -330,26 +330,26 @@ class SentenceNum extends StatelessWidget {
   }
 }
 
-Widget sentenceNumDraggable(int sentenceNum, {BuildContext context}) {
+Widget sentenceNumDraggable(int sentencepart, int num, {BuildContext context}) {
   var totalWidth = MediaQuery.of(context).size.width;
 
   return LayoutBuilder(
-    builder: (context, constraints) => Draggable<int>(
-        data: sentenceNum,
-        child: SentenceNum(sentenceNum),
+    builder: (context, constraints) => Draggable<List>(
+        data: [sentencepart, num],
+        child: SentenceNum(num),
         feedback: Material(
             type: MaterialType.transparency,
             child: Container(
               height: constraints.maxHeight,
-              child: SentenceNum(sentenceNum),
+              child: SentenceNum(num),
             )),
         childWhenDragging: Container(width: totalWidth / 10)),
   );
 }
 
 class SentenceNums extends StatelessWidget {
-  final int sentenceCount;
-  SentenceNums(this.sentenceCount);
+  final List<SentenceStr>sentenceparts;
+  SentenceNums(this.sentenceparts);
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -357,8 +357,8 @@ class SentenceNums extends StatelessWidget {
         child: Container(
           child: Row(
             children: [
-              for (int i = 1; i <= sentenceCount; i++)
-                sentenceNumDraggable(i, context: context),
+              for (int i = 0; i < sentenceparts.length; i++)
+                sentenceNumDraggable(sentenceparts.elementAt(i).num, i+1,context: context),
             ],
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -389,15 +389,19 @@ class ButtonCheck extends StatelessWidget {
         children: <Widget>[
           TextButton(
             onPressed: () async {
+              bool win =true;
+              for(int i=0;i<SentenceSpots.answers.length;i++)
             
-              Fluttertoast.showToast(
-                msg: '¡Correcto!🥳',
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                backgroundColor: SEColorScheme.white,
-                textColor: SEColorScheme.gray,
-                fontSize: 40,
-              );
+                if(!SentenceSpots.answers[i]){
+                  win=false;
+                  break;
+                }
+              if(win)
+              winToast();
+              else
+              loseToast();
+              
+
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -415,4 +419,29 @@ class ButtonCheck extends StatelessWidget {
       ),
     );
   }
+}
+
+void winToast(){
+  
+              Fluttertoast.showToast(
+                msg: '¡Correcto!🥳',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: SEColorScheme.white,
+                textColor: SEColorScheme.gray,
+                fontSize: 40,
+              );
+
+}
+void loseToast(){
+  
+              Fluttertoast.showToast(
+                msg: '¡Incorrecto!🤬',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: SEColorScheme.white,
+                textColor: SEColorScheme.gray,
+                fontSize: 40,
+              );
+
 }
