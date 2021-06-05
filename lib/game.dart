@@ -178,6 +178,7 @@ class ScoreState extends State<Score> {
       crossAxisAlignment: CrossAxisAlignment.center,
     );
   }
+
 }
 
 class Score extends StatefulWidget {
@@ -386,6 +387,7 @@ TextStyle toastStyle = new TextStyle(
   fontSize: 25,
 );
 
+
 class BCheck extends StatefulWidget {
   @override
   _ButtonCheck createState() => _ButtonCheck();
@@ -428,8 +430,11 @@ class _ButtonCheck extends State<BCheck> {
                     backgroundColor: SEColorScheme.black,
                     shape: StadiumBorder(),
                   ), onPressed: () {  
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+                     Navigator.pop(context);
+                    
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) { 
                      return SyntaxGame( SyntaxGame.globalScore);
+                     
                  
                   }));
                   }
@@ -496,7 +501,6 @@ void winToast(){
                 textColor: SEColorScheme.gray,
                 fontSize: 40,
               );
-              ButtonNext();
               
 
 }
@@ -513,33 +517,3 @@ void loseToast(){
 
 
 }
-
-class ButtonNext extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-     return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[TextButton(
-                onPressed: () async {
-                
-
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Siguiente',
-                    style: buttonTStyle,
-                  ),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: SEColorScheme.black,
-                  shape: StadiumBorder(),
-                ),
-              ),
-          ],
-        ),
-      );
-  }
-}
-

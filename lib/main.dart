@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           splashTransition: SplashTransition.rotationTransition,
           backgroundColor: SEColorScheme.lightBlue,
           duration: 1000,
-          pageTransitionType: PageTransitionType.rightToLeft,
+          pageTransitionType: PageTransitionType.fade,
         ),
         //Menu(),
        /* Scaffold(
