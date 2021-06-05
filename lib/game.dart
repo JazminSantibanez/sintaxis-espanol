@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import "package:flutter/material.dart";
@@ -128,7 +129,7 @@ class Game extends StatelessWidget {
                         Container(child: Sentence(i + 1, snapshot.data[i].content), width: double.infinity, height: (MediaQuery.of(context).size.height * 0.28307692307 / (snapshot.data.length + 1)))
                     ],
                   ).inGridArea("sentence-parts"),
-                  ButtonCheck().inGridArea("buttonCheck"),
+                  BCheck().inGridArea("buttonCheck"),
                 ],
               ),
             );
@@ -380,68 +381,160 @@ TextStyle toastStyle = new TextStyle(
   fontSize: 25,
 );
 
-class ButtonCheck extends StatelessWidget {
+class BCheck extends StatefulWidget {
+  @override
+  _ButtonCheck createState() => _ButtonCheck();
+}
+
+class _ButtonCheck extends State<BCheck> {
+  bool _visible =true;
+  bool _next =false;
+  void _disappear(){
+    setState(() {
+      _visible = false;
+    });
+    
+  }
+    void _appear(){
+    setState(() {
+      _visible = true;
+    });
+    }
+    void _appearnext(){
+    setState(() {
+      _next = true;
+    });
+    }
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          TextButton(
-            onPressed: () async {
-              bool win =true;
-              for(int i=0;i<SentenceSpots.answers.length;i++)
-            
-                if(!SentenceSpots.answers[i]){
-                  win=false;
-                  break;
-                }
-              if(win)
-              winToast();
-              else
-              loseToast();
-              
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[ Visibility( visible: _next,
+            child: TextButton(child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'Next',
+                      style: buttonTStyle,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: SEColorScheme.black,
+                    shape: StadiumBorder(),
+                  ), onPressed: () {  
 
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Comprobar',
-                style: buttonTStyle,
+                     Navigator.of(context).push( 
+                  MaterialPageRoute(
+                    builder: (context) => SyntaxGame()
+                    )
+                );
+                  },
+                  ),
+          ),
+            Visibility(
+              visible: _visible,
+              child: TextButton(
+                onPressed: () async {
+                  bool win =true;
+                  for(int i=0;i<SentenceSpots.answers.length;i++)
+                
+                    if(!SentenceSpots.answers[i]){
+                      win=false;
+                      break;
+                    }
+                  if(win){ 
+                    _disappear();
+                    winToast();
+                    Timer(Duration(seconds: 3), () {
+                        _appearnext();
+                    });
+                    
+                  }
+                  
+                  else{
+                    _disappear();
+                    loseToast();
+                    Timer(Duration(seconds: 3), () {
+                        _appear();
+                    });
+                  }
+                  
+
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Comprobar',
+                    style: buttonTStyle,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor: SEColorScheme.black,
+                  shape: StadiumBorder(),
+                ),
               ),
-            ),
-            style: TextButton.styleFrom(
-              backgroundColor: SEColorScheme.black,
-              shape: StadiumBorder(),
-            ),
-          )
-        ],
-      ),
-    );
+            )
+          ],
+        ),
+      );
   }
 }
 
 void winToast(){
   
+              
               Fluttertoast.showToast(
                 msg: '¡Correcto!🥳',
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.BOTTOM,
-                backgroundColor: SEColorScheme.white,
+                backgroundColor: Colors.transparent,
                 textColor: SEColorScheme.gray,
                 fontSize: 40,
               );
+              ButtonNext();
+              
 
 }
 void loseToast(){
-  
+              
               Fluttertoast.showToast(
                 msg: '¡Incorrecto!🤬',
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.BOTTOM,
-                backgroundColor: SEColorScheme.white,
+                backgroundColor: Colors.transparent,
                 textColor: SEColorScheme.gray,
                 fontSize: 40,
               );
 
+
 }
+
+class ButtonNext extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+     return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[TextButton(
+                onPressed: () async {
+                
+
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Siguiente',
+                    style: buttonTStyle,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor: SEColorScheme.black,
+                  shape: StadiumBorder(),
+                ),
+              ),
+          ],
+        ),
+      );
+  }
+}
+
