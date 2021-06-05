@@ -88,9 +88,10 @@ class ButtonGame extends StatelessWidget {
             TextButton(
               
               onPressed: (){
+                int score=0;
                 Navigator.of(context).push( 
                   MaterialPageRoute(
-                    builder: (context) => SyntaxGame()
+                    builder: (context) => SyntaxGame(score)
                     )
                 );
 

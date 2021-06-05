@@ -11,8 +11,12 @@ import 'package:sintaxis_espanol/variables.dart';
 Set<int> setOfInts = Set();
 
 class SyntaxGame extends StatelessWidget {
+  final int score;
+  SyntaxGame(this.score);
+  static int globalScore;
   @override
   Widget build(BuildContext context) {
+      globalScore = score;
     return Scaffold(
       appBar: buildAppBar(),
       body: Game(),
@@ -152,21 +156,22 @@ BoxDecoration roundBoxDecoration(
 }
 
 class ScoreState extends State<Score> {
+  int points = SyntaxGame.globalScore;
+
   @override
   Widget build(BuildContext context) {
     var totalWidth = MediaQuery.of(context).size.width;
-
     return Row(
       children: [
         Container(
-            child: Text("Puntuación"),
+            child: Text("Puntuación "),
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: totalWidth * 0.05)),
         Container(
           margin: EdgeInsets.only(left: totalWidth * 0.02),
           padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
           decoration: roundBoxDecoration(color: SEColorScheme.blue),
-          child: Text(2345.toString()),
+          child: Text(points.toString()),
         ),
       ],
       mainAxisAlignment: MainAxisAlignment.start,
@@ -407,6 +412,7 @@ class _ButtonCheck extends State<BCheck> {
     }
   @override
   Widget build(BuildContext context) {
+   
     return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -422,15 +428,12 @@ class _ButtonCheck extends State<BCheck> {
                     backgroundColor: SEColorScheme.black,
                     shape: StadiumBorder(),
                   ), onPressed: () {  
-
-                     Navigator.of(context).push( 
-                  MaterialPageRoute(
-                    builder: (context) => SyntaxGame()
-                    )
-                );
-                  },
-                  ),
-          ),
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+                     return SyntaxGame( SyntaxGame.globalScore);
+                 
+                  }));
+                  }
+          )),
             Visibility(
               visible: _visible,
               child: TextButton(
@@ -443,6 +446,8 @@ class _ButtonCheck extends State<BCheck> {
                       break;
                     }
                   if(win){ 
+                    SyntaxGame.globalScore +=100;
+                    print(SyntaxGame.globalScore);
                     _disappear();
                     winToast();
                     Timer(Duration(seconds: 3), () {
