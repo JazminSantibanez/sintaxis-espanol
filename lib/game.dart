@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-
 import "package:flutter/material.dart";
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sintaxis_espanol/databaseHelper.dart';
@@ -495,6 +495,7 @@ class _ButtonCheck extends State<BCheck> {
 
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -540,15 +541,18 @@ class _ButtonCheck extends State<BCheck> {
                     break;
                   }
                 if (win) {
+                  audioPlayer.open(Audio('assets/sounds/win.wav'),);
                   SyntaxGame.globalScore += 100;
                   SyntaxGame.globalScoreSubject.add(SyntaxGame.globalScore);
                   print(SyntaxGame.globalScore);
                   _disappear();
+                  //_audioController.play(fileName);
                   winToast();
                   Timer(Duration(seconds: 3), () {
                     _appearnext();
                   });
                 } else {
+                  audioPlayer.open(Audio('assets/sounds/lose.wav'),);
                   SyntaxGame.globalStreak += 1;
                   SyntaxGame.globalStreakSubject.add(SyntaxGame.globalStreak);
 
