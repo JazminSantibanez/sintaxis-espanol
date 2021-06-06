@@ -37,6 +37,7 @@ dependencies:
   animated_splash_screen: ^1.1.0
   rxdart: ^0.27.1
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -73,6 +74,13 @@ flutter:
     - family: Helveticat
       fonts:
         - asset: fonts/HelveticaNeueLTStd-Roman.otf
+            
+    - family: groovy
+      fonts:
+        - asset: fonts/Catskin.otf
+    - family: fatnumbers
+      fonts:
+        - asset: fonts/NoVirus.otf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

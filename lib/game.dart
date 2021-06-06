@@ -1,23 +1,24 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import "package:flutter/material.dart";
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sintaxis_espanol/databaseHelper.dart';
+import 'package:sintaxis_espanol/lose.dart';
 import 'package:sintaxis_espanol/menu.dart';
 import 'package:sintaxis_espanol/variables.dart';
 import 'package:rxdart/rxdart.dart';
-//import 'package:sintaxis_espanol/globals.dart' as globals;
-
-Set<int> setOfInts = Set();
 
 class SyntaxGame extends StatelessWidget {
   final int score;
   final int streak;
-  SyntaxGame(this.score, this.streak);
+  final Set<int> setOfIntsUsed;
+  SyntaxGame(this.score, this.streak, this.setOfIntsUsed);
   static int globalScore;
   static int globalStreak;
+  static Set<int> setOfInts;
   static final globalScoreSubject = BehaviorSubject<int>();
   static final globalStreakSubject = BehaviorSubject<int>();
   @override
@@ -26,15 +27,22 @@ class SyntaxGame extends StatelessWidget {
     globalStreakSubject.add(streak);
     globalScore = score;
     globalScoreSubject.add(score);
+    setOfInts=setOfIntsUsed;
+    if(SyntaxGame.setOfInts.length>=100){
+      limite();
+     return Menu();
+    }
+    else
     return Scaffold(
       appBar: buildAppBar(),
       body: Game(),
     );
+    
   }
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text("Atrás"),
+      title: Text("Atrás", style:TextStyle(fontFamily: 'groovy', fontSize: 25),),
     );
   }
 }
@@ -58,11 +66,11 @@ Future<List<SentenceStr>> randomSentence() async {
   // Del total de número obtener un número random que no re repita
   Random random = new Random();
   int randomNumber = random.nextInt(queryrows) + 1;
-
-  while (setOfInts.contains(randomNumber)) {
+ 
+  while (SyntaxGame.setOfInts.contains(randomNumber)) {
     randomNumber = random.nextInt(queryrows) + 1;
   }
-  setOfInts.add(randomNumber);
+  SyntaxGame.setOfInts.add(randomNumber);
 
   // obtener la fila que contiene el id del número random generado
   List<Map<String, dynamic>> s =
@@ -219,7 +227,7 @@ class ScoreState extends State<Score> {
     return Row(
       children: [
         Container(
-            child: Text("Puntuación "),
+            child: Text("Puntuación ",style: TextStyle(fontFamily: 'groovy', fontSize: 25),),
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: totalWidth * 0.05)),
         Container(
@@ -242,7 +250,7 @@ class Score extends StatefulWidget {
   }
 }
 
-TextStyle instructionTextStyle = new TextStyle(fontSize: 17);
+TextStyle instructionTextStyle = new TextStyle(fontSize: 20,fontFamily: 'Helveticat');
 
 class Instructions extends StatelessWidget {
   @override
@@ -254,7 +262,7 @@ class Instructions extends StatelessWidget {
             child: Text(
               "Ordena las frases para que formen la oración correcta.",
               style: instructionTextStyle,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, 
             )));
   }
 }
@@ -278,7 +286,7 @@ class Sentence extends StatelessWidget {
                 child: Container(
                     child: Text(
                       "$sentenceNo°",
-                      style: TextStyle(fontSize: 17),
+                      style: TextStyle(fontSize: 17, fontFamily: 'Helveticat'),
                     ),
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(left: totalWidth * 0.075)),
@@ -294,7 +302,7 @@ class Sentence extends StatelessWidget {
                     child: Text(
                       "$text",
                       style:
-                          TextStyle(fontSize: 11, color: SEColorScheme.black),
+                          TextStyle(fontSize: 13, color: SEColorScheme.black, fontFamily: 'Helveticat'),
                       textAlign: TextAlign.center,
                     ),
                     alignment: Alignment.center),
@@ -383,10 +391,20 @@ class SentenceNum extends StatelessWidget {
     var totalHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      decoration: roundBoxDecoration(color: SEColorScheme.gray),
+      //decoration: roundBoxDecoration(color: SEColorScheme.gray, borderColor: SEColorScheme.black.withOpacity(.2), borderWidth: 2),
+      decoration:BoxDecoration( borderRadius: BorderRadius.circular(5), color: SEColorScheme.gray,
+    boxShadow: [
+      BoxShadow(
+        color: SEColorScheme.black.withOpacity(.3),
+        spreadRadius: 2,
+        blurRadius: 10,
+        offset: Offset(0, 6), // changes position of shadow
+      ),
+    ],
+  ),
       child: Text(
         "$sentenceNo°",
-        style: TextStyle(color: SEColorScheme.white, fontSize: 16),
+        style: TextStyle(color: SEColorScheme.white, fontSize: 18, fontFamily: 'Helveticat'),
       ),
       alignment: Alignment.center,
       width: totalWidth / 10,
@@ -438,13 +456,10 @@ class SentenceNums extends StatelessWidget {
 }
 
 TextStyle buttonTStyle = new TextStyle(
-  color: SEColorScheme.white,
-  fontSize: 15,
-);
-TextStyle toastStyle = new TextStyle(
-  color: SEColorScheme.white,
+  color: SEColorScheme.white, fontFamily: 'groovy',
   fontSize: 25,
 );
+
 
 class BCheck extends StatefulWidget {
   @override
@@ -490,13 +505,15 @@ class _ButtonCheck extends State<BCheck> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      'Next',
+                      'Siguiente',
                       style: buttonTStyle,
                     ),
                   ),
                   style: TextButton.styleFrom(
                     backgroundColor: SEColorScheme.black,
                     shape: StadiumBorder(),
+                    shadowColor: SEColorScheme.black,
+                    elevation: 10
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -509,7 +526,7 @@ class _ButtonCheck extends State<BCheck> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
                       return SyntaxGame(
-                          SyntaxGame.globalScore, SyntaxGame.globalStreak);
+                          SyntaxGame.globalScore, SyntaxGame.globalStreak, SyntaxGame.setOfInts);
                     }));
                   })),
           Visibility(
@@ -546,7 +563,7 @@ class _ButtonCheck extends State<BCheck> {
 
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                      return Menu();
+                      return Lose();
                     }));
                   }
                   _disappear();
@@ -560,12 +577,14 @@ class _ButtonCheck extends State<BCheck> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Comprobar',
-                  style: buttonTStyle,
+                  style: buttonTStyle, 
                 ),
               ),
               style: TextButton.styleFrom(
                 backgroundColor: SEColorScheme.black,
                 shape: StadiumBorder(),
+                 shadowColor: SEColorScheme.black,
+                    elevation: 20,
               ),
             ),
           )
@@ -599,4 +618,16 @@ void loseToast() {
     textColor: SEColorScheme.gray,
     fontSize: 40,
   );
+
 }
+
+    void limite() {
+  Fluttertoast.showToast(
+    msg: '¡has contestado todas las preguntas! 😯',
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: SEColorScheme.white,
+    textColor: SEColorScheme.black,
+    fontSize: 40,
+  );
+    }

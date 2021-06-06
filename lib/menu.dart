@@ -40,6 +40,7 @@ class Body extends StatelessWidget {
         areas: '''
         Logo
         ButtonGame
+        .
         ButtonStreak
         ButtonHelp
         ''',
@@ -47,6 +48,7 @@ class Body extends StatelessWidget {
         rowSizes: [
           (.5).fr,
           (.5).fr,
+          (.2).fr,
           (.5).fr,
           (.5).fr,
         ],
@@ -66,59 +68,67 @@ class Body extends StatelessWidget {
 class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Padding(
-      padding: const EdgeInsets.only(top: 55.0),
+    return Container(
+      alignment: Alignment.bottomCenter,
       child: Image.asset(
         "assets/images/sintaxlogo.png",
-        height: 100,
-        width: 400,
-        fit: BoxFit.fitWidth,
+        width: double.infinity,
       ),
-    ));
+    );
   }
 }
 
 TextStyle buttonTStyle = new TextStyle(
   color: SEColorScheme.white,
-  fontSize: 25,
-  fontFamily: 'Helveticat',
+  fontSize: 35,
+  fontFamily: 'groovy',
 );
 
 class ButtonGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        //color: SEColorScheme.black ,
-        child: Center(
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Image.asset(
-          "assets/icons/prize.png",
-          height: 80,
-          width: 80,
-          fit: BoxFit.fitWidth,
-        ),
-        TextButton(
-          onPressed: () {
-            int score = 0;
-            int streak = 0;
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => SyntaxGame(score, streak)));
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
-              'Nueva Partida',
-              style: buttonTStyle,
+      child: Stack(alignment: Alignment.center, children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * .07,
+          width: MediaQuery.of(context).size.width * .55,
+          child: TextButton(
+            onPressed: () {
+              int score = 0;
+              int streak = 0;
+              Set<int> setOfInts = Set();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => SyntaxGame(score, streak,setOfInts)));
+            },
+            child: Container(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Nueva Partida',
+                style: buttonTStyle,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              backgroundColor: SEColorScheme.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+              shadowColor: SEColorScheme.blue,
+              elevation: 10,
             ),
           ),
-          style: TextButton.styleFrom(
-            backgroundColor: SEColorScheme.black,
-            shape: StadiumBorder(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 53.0),
+          child: Container(
+            child: Image.asset(
+              "assets/icons/prize.png",
+              height: MediaQuery.of(context).size.height * .155,
+            ),
+            alignment: Alignment.topLeft,
           ),
         ),
       ]),
-    ));
+    );
   }
 }
 
@@ -145,32 +155,39 @@ class ButtonStreakState extends State<ButtonStreak> {
         future: highScoreQuery,
         builder: (context, AsyncSnapshot<int> snapshot) {
           if (snapshot.hasData) {
-            return Container(
-                child: Center(
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Image.asset(
-                  "assets/icons/fire.png",
-                  height: 80,
-                  width: 80,
-                  fit: BoxFit.fitWidth,
+            return Column(children: [
+              Image.asset(
+                'assets/images/rank.png',
+                height: MediaQuery.of(context).size.height / 10,
+              ),
+              Container(
+                child: Row(
+                  children: [Stack(children:[
+                    /*Text('Mejor Puntaje: ',
+                         style: TextStyle(
+        fontSize: 35,
+        foreground: Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 6
+          ..color = SEColorScheme.white, fontFamily: 'groovy'
+      )),*/Text('Mejor Puntaje: ',
+                        style: const TextStyle(
+                          fontSize: 35,
+                          fontFamily: 'groovy',
+                          color: SEColorScheme.black,
+                        ))
+                        ]),
+                    Text(snapshot.data.toString(),
+                        style: const TextStyle(
+                            fontSize: 35,
+                            fontFamily: 'fatnumbers',
+                            color: SEColorScheme.black)),
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.center,
                 ),
-                TextButton(
-                  onPressed: () async {},
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Text(
-                      'Mejor Partida: ' + snapshot.data.toString(),
-                      style: buttonTStyle,
-                    ),
-                  ),
-                  style: TextButton.styleFrom(
-                    backgroundColor: SEColorScheme.black,
-                    shape: StadiumBorder(),
-                  ),
-                ),
-              ]),
-            ));
+                alignment: Alignment.topCenter,
+              )
+            ]);
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -188,8 +205,9 @@ class ButtonHelp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
         child: IconButton(
-      icon: Icon(Icons.help),
-      color: SEColorScheme.white,
+      icon: Icon(Icons.help_outline_rounded),
+      iconSize: MediaQuery.of(context).size.height * .1,
+      color: SEColorScheme.black,
       onPressed: () {
         openHelpScreen(context);
       },
