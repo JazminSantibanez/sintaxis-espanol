@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 class DatabaseHelper {
   static final _dbName = 'game.db';
   static final _tableName = 'Sentence';
+  static final _scoreTableName = 'HighScore';
 
   static final columnId = '"#"';
   static final columnName = 'name';
@@ -55,7 +56,6 @@ class DatabaseHelper {
     return await db.insert(_tableName, row);
   }
 
-
   Future update(Map<String, dynamic> row) async {
     Database db = await instance.database;
     int id = row[columnId];
@@ -72,15 +72,30 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(_tableName);
   }
-  Future<int> numRows() async{
+
+  Future<int> numRows() async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM Sentence'));
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM Sentence'));
   }
 
   Future<List<Map<String, dynamic>>> getSentencetById(int id) async {
-    Database db = await instance.database; 
-    //var result = await db.query("Sentence", where: "id = ", whereArgs: [id]); 
+    Database db = await instance.database;
+    // var result = await db.query("Sentence", where: "id = ", whereArgs: [id]);
     return await db.rawQuery('SELECT * FROM Sentence WHERE "#" = $id ');
-    //return result.isNotEmpty ? Sentence.fromMap(result.first) : Null; 
-  } 
+    // return result.isNotEmpty ? Sentence.fromMap(result.first) : Null;
+  }
+
+  Future updateScore(int highScore) async {
+    Database db = await instance.database;
+    var scoreRow = Map<String, int>();
+    scoreRow["HighScore"] = highScore;
+    return await db.update(_scoreTableName, scoreRow);
+  }
+
+  Future<int> getHighScore() async {
+    Database db = await instance.database;
+
+    return Sqflite.firstIntValue(await db.query(_scoreTableName));
+  }
 }
