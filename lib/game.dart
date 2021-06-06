@@ -105,7 +105,8 @@ class Game extends StatelessWidget {
         builder: (context, AsyncSnapshot<List<SentenceStr>> snapshot) {
           if (snapshot.hasData) {
             return Container(
-              color: Colors.transparent,
+              
+              color: Colors.white,
               child: LayoutGrid(
                 areas: '''
                         score error-streaks

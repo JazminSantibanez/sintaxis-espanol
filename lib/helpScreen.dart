@@ -19,7 +19,7 @@ class HelpScreen extends StatelessWidget {
 class Help extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Image.asset("assets/images/streak.png",
+    return Image.asset("assets/images/instrucciones.png",
         width: double.infinity, height: double.infinity);
   }
 }
