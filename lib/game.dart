@@ -163,7 +163,7 @@ class ErrorStreakState extends State<ErrorStreak> {
   Widget build(BuildContext context) {
     SyntaxGame.globalStreakSubject.listen((newStreak) {
       if (this.mounted) {
-        setState((){});
+        setState(() {});
       }
     });
 
@@ -499,11 +499,11 @@ class _ButtonCheck extends State<BCheck> {
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    
+
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                          return Menu();
-                          }));
+                      return Menu();
+                    }));
 
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
@@ -533,10 +533,14 @@ class _ButtonCheck extends State<BCheck> {
                 } else {
                   SyntaxGame.globalStreak += 1;
                   SyntaxGame.globalStreakSubject.add(SyntaxGame.globalStreak);
-                  
+
                   // You lost
                   if (SyntaxGame.globalStreak == 3) {
-                    updateHighScore(SyntaxGame.globalScore);
+                    if (SyntaxGame.globalScore > Menu.highestScore) {
+                      updateHighScore(SyntaxGame.globalScore);
+                      Menu.highestScore = SyntaxGame.globalScore;
+                    }
+
                     Navigator.pop(context);
 
                     Navigator.push(context,
@@ -570,13 +574,8 @@ class _ButtonCheck extends State<BCheck> {
   }
 }
 
-Future<bool> updateHighScore(int currentScore) async {
-  var highScore = await DatabaseHelper.instance.getHighScore();
-
-  if(currentScore > highScore)
-    DatabaseHelper.instance.updateScore(currentScore);
-  
-  return currentScore > highScore;
+void updateHighScore(int currentScore) async {
+  DatabaseHelper.instance.updateScore(currentScore);
 }
 
 void winToast() {

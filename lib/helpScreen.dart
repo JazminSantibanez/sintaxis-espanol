@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 
 class HelpScreen extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +19,7 @@ class HelpScreen extends StatelessWidget {
 class Help extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Image.asset("assets/images/streak.png", width: double.infinity, height: double.infinity, fit: BoxFit.fill,);
+    return Image.asset("assets/images/streak.png",
+        width: double.infinity, height: double.infinity);
   }
-  
 }

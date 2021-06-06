@@ -10,14 +10,12 @@ import 'databaseHelper.dart';
 import 'helpScreen.dart';
 
 class Menu extends StatelessWidget {
-
-  static final BehaviorSubject<void> shouldUpdateScore = new BehaviorSubject<void>();
+  static int highestScore = 0;
 
   Menu();
 
   @override
   Widget build(BuildContext context) {
-    shouldUpdateScore.add(() {});
     return Scaffold(
       //appBar: buildAppBar(),
       body: Body(),
@@ -105,9 +103,7 @@ class ButtonGame extends StatelessWidget {
             int score = 0;
             int streak = 0;
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => SyntaxGame(score, streak))).then((v) {
-                  Menu.shouldUpdateScore.add(() {});
-                });
+                builder: (context) => SyntaxGame(score, streak)));
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -127,7 +123,7 @@ class ButtonGame extends StatelessWidget {
 }
 
 Future<int> updateHighScoreWithDelay() {
-  sleep(Duration(seconds:3));
+  sleep(Duration(seconds: 3));
   return DatabaseHelper.instance.getHighScore();
 }
 
@@ -141,19 +137,12 @@ class ButtonStreak extends StatefulWidget {
 class ButtonStreakState extends State<ButtonStreak> {
   @override
   Widget build(BuildContext context) {
+    var highScoreQuery = DatabaseHelper.instance
+        .getHighScore()
+        .then((value) => Menu.highestScore = value);
 
-      var highScoreP = updateHighScoreWithDelay();
-
-      Menu.shouldUpdateScore.listen(
-        (d) {
-          setState(() {
-            highScoreP = updateHighScoreWithDelay();
-          });
-        }
-      );
-
-      return FutureBuilder<int>(
-        future: highScoreP,
+    return FutureBuilder<int>(
+        future: highScoreQuery,
         builder: (context, AsyncSnapshot<int> snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -187,18 +176,23 @@ class ButtonStreakState extends State<ButtonStreak> {
           }
         });
   }
-  
 }
 
 void openHelpScreen(BuildContext context) {
-  Navigator.of(context).push(MaterialPageRoute(
-    builder: (context) => HelpScreen()));
+  Navigator.of(context)
+      .push(MaterialPageRoute(builder: (context) => HelpScreen()));
 }
 
 class ButtonHelp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: IconButton(icon:Icon(Icons.help), color: SEColorScheme.white, onPressed: () {openHelpScreen(context);},));
+    return Center(
+        child: IconButton(
+      icon: Icon(Icons.help),
+      color: SEColorScheme.white,
+      onPressed: () {
+        openHelpScreen(context);
+      },
+    ));
   }
-  
 }
