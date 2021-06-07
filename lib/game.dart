@@ -27,22 +27,23 @@ class SyntaxGame extends StatelessWidget {
     globalStreakSubject.add(streak);
     globalScore = score;
     globalScoreSubject.add(score);
-    setOfInts=setOfIntsUsed;
-    if(SyntaxGame.setOfInts.length>=100){
+    setOfInts = setOfIntsUsed;
+    if (SyntaxGame.setOfInts.length >= 100) {
       limite();
-     return Menu();
-    }
-    else
-    return Scaffold(
-      appBar: buildAppBar(),
-      body: Game(),
-    );
-    
+      return Menu();
+    } else
+      return Scaffold(
+        appBar: buildAppBar(),
+        body: Game(),
+      );
   }
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text("Atrás", style:TextStyle(fontFamily: 'groovy', fontSize: 25),),
+      title: Text(
+        "Atrás",
+        style: TextStyle(fontFamily: 'groovy', fontSize: 25),
+      ),
     );
   }
 }
@@ -66,7 +67,7 @@ Future<List<SentenceStr>> randomSentence() async {
   // Del total de número obtener un número random que no re repita
   Random random = new Random();
   int randomNumber = random.nextInt(queryrows) + 1;
- 
+
   while (SyntaxGame.setOfInts.contains(randomNumber)) {
     randomNumber = random.nextInt(queryrows) + 1;
   }
@@ -113,7 +114,6 @@ class Game extends StatelessWidget {
         builder: (context, AsyncSnapshot<List<SentenceStr>> snapshot) {
           if (snapshot.hasData) {
             return Container(
-              
               color: Colors.white,
               child: LayoutGrid(
                 areas: '''
@@ -227,7 +227,10 @@ class ScoreState extends State<Score> {
     return Row(
       children: [
         Container(
-            child: Text("Puntuación ",style: TextStyle(fontFamily: 'groovy', fontSize: 25),),
+            child: Text(
+              "Puntuación ",
+              style: TextStyle(fontFamily: 'groovy', fontSize: 25),
+            ),
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: totalWidth * 0.05)),
         Container(
@@ -250,7 +253,8 @@ class Score extends StatefulWidget {
   }
 }
 
-TextStyle instructionTextStyle = new TextStyle(fontSize: 20,fontFamily: 'Helveticat');
+TextStyle instructionTextStyle =
+    new TextStyle(fontSize: 20, fontFamily: 'Helveticat');
 
 class Instructions extends StatelessWidget {
   @override
@@ -262,7 +266,7 @@ class Instructions extends StatelessWidget {
             child: Text(
               "Ordena las frases para que formen la oración correcta.",
               style: instructionTextStyle,
-              textAlign: TextAlign.center, 
+              textAlign: TextAlign.center,
             )));
   }
 }
@@ -301,8 +305,10 @@ class Sentence extends StatelessWidget {
                 child: Container(
                     child: Text(
                       "$text",
-                      style:
-                          TextStyle(fontSize: 13, color: SEColorScheme.black, fontFamily: 'Helveticat'),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: SEColorScheme.black,
+                          fontFamily: 'Helveticat'),
                       textAlign: TextAlign.center,
                     ),
                     alignment: Alignment.center),
@@ -392,19 +398,22 @@ class SentenceNum extends StatelessWidget {
 
     return Container(
       //decoration: roundBoxDecoration(color: SEColorScheme.gray, borderColor: SEColorScheme.black.withOpacity(.2), borderWidth: 2),
-      decoration:BoxDecoration( borderRadius: BorderRadius.circular(5), color: SEColorScheme.gray,
-    boxShadow: [
-      BoxShadow(
-        color: SEColorScheme.black.withOpacity(.3),
-        spreadRadius: 2,
-        blurRadius: 10,
-        offset: Offset(0, 6), // changes position of shadow
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: SEColorScheme.gray,
+        boxShadow: [
+          BoxShadow(
+            color: SEColorScheme.black.withOpacity(.3),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: Offset(0, 6), // changes position of shadow
+          ),
+        ],
       ),
-    ],
-  ),
       child: Text(
         "$sentenceNo°",
-        style: TextStyle(color: SEColorScheme.white, fontSize: 18, fontFamily: 'Helveticat'),
+        style: TextStyle(
+            color: SEColorScheme.white, fontSize: 18, fontFamily: 'Helveticat'),
       ),
       alignment: Alignment.center,
       width: totalWidth / 10,
@@ -456,10 +465,10 @@ class SentenceNums extends StatelessWidget {
 }
 
 TextStyle buttonTStyle = new TextStyle(
-  color: SEColorScheme.white, fontFamily: 'groovy',
+  color: SEColorScheme.white,
+  fontFamily: 'groovy',
   fontSize: 25,
 );
-
 
 class BCheck extends StatefulWidget {
   @override
@@ -511,11 +520,10 @@ class _ButtonCheck extends State<BCheck> {
                     ),
                   ),
                   style: TextButton.styleFrom(
-                    backgroundColor: SEColorScheme.black,
-                    shape: StadiumBorder(),
-                    shadowColor: SEColorScheme.black,
-                    elevation: 10
-                  ),
+                      backgroundColor: SEColorScheme.black,
+                      shape: StadiumBorder(),
+                      shadowColor: SEColorScheme.black,
+                      elevation: 10),
                   onPressed: () {
                     Navigator.pop(context);
 
@@ -526,8 +534,8 @@ class _ButtonCheck extends State<BCheck> {
 
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                      return SyntaxGame(
-                          SyntaxGame.globalScore, SyntaxGame.globalStreak, SyntaxGame.setOfInts);
+                      return SyntaxGame(SyntaxGame.globalScore,
+                          SyntaxGame.globalStreak, SyntaxGame.setOfInts);
                     }));
                   })),
           Visibility(
@@ -541,7 +549,9 @@ class _ButtonCheck extends State<BCheck> {
                     break;
                   }
                 if (win) {
-                  audioPlayer.open(Audio('assets/sounds/win.wav'),);
+                  audioPlayer.open(
+                    Audio('assets/sounds/win.wav'),
+                  );
                   SyntaxGame.globalScore += 100;
                   SyntaxGame.globalScoreSubject.add(SyntaxGame.globalScore);
                   print(SyntaxGame.globalScore);
@@ -552,18 +562,23 @@ class _ButtonCheck extends State<BCheck> {
                     _appearnext();
                   });
                 } else {
-                  audioPlayer.open(Audio('assets/sounds/lose.wav'),);
+                  audioPlayer.open(
+                    Audio('assets/sounds/lose.wav'),
+                  );
                   SyntaxGame.globalStreak += 1;
                   SyntaxGame.globalStreakSubject.add(SyntaxGame.globalStreak);
 
                   // You lost
                   if (SyntaxGame.globalStreak == 3) {
-                    if (SyntaxGame.globalScore > Menu.highestScore) {
-                      updateHighScore(SyntaxGame.globalScore);
-                      Menu.highestScore = SyntaxGame.globalScore;
-                    }
+                    updateMenuHighScore();
 
-                    Navigator.pop(context);
+                    Navigator.popUntil(
+                        context, (Route<dynamic> route) => false);
+
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return Menu();
+                    }));
 
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
@@ -581,14 +596,14 @@ class _ButtonCheck extends State<BCheck> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Comprobar',
-                  style: buttonTStyle, 
+                  style: buttonTStyle,
                 ),
               ),
               style: TextButton.styleFrom(
                 backgroundColor: SEColorScheme.black,
                 shape: StadiumBorder(),
-                 shadowColor: SEColorScheme.black,
-                    elevation: 20,
+                shadowColor: SEColorScheme.black,
+                elevation: 20,
               ),
             ),
           )
@@ -622,10 +637,9 @@ void loseToast() {
     textColor: SEColorScheme.gray,
     fontSize: 40,
   );
-
 }
 
-    void limite() {
+void limite() {
   Fluttertoast.showToast(
     msg: '¡has contestado todas las preguntas! 😯',
     toastLength: Toast.LENGTH_SHORT,
@@ -634,4 +648,4 @@ void loseToast() {
     textColor: SEColorScheme.black,
     fontSize: 40,
   );
-    }
+}

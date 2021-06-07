@@ -87,20 +87,19 @@ TextStyle buttonTStyle = new TextStyle(
 class ButtonGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-          var totalwidth =MediaQuery.of(context).size.width;
+    var totalwidth = MediaQuery.of(context).size.width;
     return Container(
-
       child: Stack(alignment: Alignment.bottomCenter, children: [
         SizedBox(
-          height:60,
-          width: MediaQuery.of(context).size.width/2,
+          height: 60,
+          width: MediaQuery.of(context).size.width / 2,
           child: TextButton(
             onPressed: () {
               int score = 0;
               int streak = 0;
               Set<int> setOfInts = Set();
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => SyntaxGame(score, streak,setOfInts)));
+                  builder: (context) => SyntaxGame(score, streak, setOfInts)));
             },
             child: Container(
               alignment: Alignment.centerRight,
@@ -119,14 +118,14 @@ class ButtonGame extends StatelessWidget {
             ),
           ),
         ),
-      Container(
-        margin: EdgeInsets.only(left: totalwidth/8),
-            child: Image.asset(
-              "assets/icons/prize.png",
-              height: 120,
-            ),
-            alignment: Alignment.bottomLeft, 
+        Container(
+          margin: EdgeInsets.only(left: totalwidth / 8),
+          child: Image.asset(
+            "assets/icons/prize.png",
+            height: 120,
           ),
+          alignment: Alignment.bottomLeft,
+        ),
       ]),
     );
   }
@@ -147,6 +146,7 @@ class ButtonStreak extends StatefulWidget {
 class ButtonStreakState extends State<ButtonStreak> {
   @override
   Widget build(BuildContext context) {
+    print("Rebuilt high score");
     var highScoreQuery = DatabaseHelper.instance
         .getHighScore()
         .then((value) => Menu.highestScore = value);
@@ -162,34 +162,38 @@ class ButtonStreakState extends State<ButtonStreak> {
               ),
               Container(
                 child: Row(
-                  children: [Stack(children:[
-                    Text('Mejor Puntaje: ',
-                         style: TextStyle(
-                          fontSize: 35,
-                          foreground: Paint()
-                            ..style = PaintingStyle.stroke
-                            ..strokeWidth = 6
-                            ..color = SEColorScheme.white, fontFamily: 'groovy'
-      )),Text('Mejor Puntaje: ',
-                        style: const TextStyle(
-                          fontSize: 35,
-                          fontFamily: 'groovy',
-                          color: SEColorScheme.black,
-                        ))
-                        ]), Stack( children:[
-                            Text(snapshot.data.toString(),
-                         style: TextStyle(
-                          fontSize: 35,
-                          foreground: Paint()
-                            ..style = PaintingStyle.stroke
-                            ..strokeWidth = 6
-                            ..color = SEColorScheme.white, fontFamily: 'fatnumbers'
-              )),
-                    Text(snapshot.data.toString(),
-                        style: const TextStyle(
+                  children: [
+                    Stack(children: [
+                      Text('Mejor Puntaje: ',
+                          style: TextStyle(
+                              fontSize: 35,
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 6
+                                ..color = SEColorScheme.white,
+                              fontFamily: 'groovy')),
+                      Text('Mejor Puntaje: ',
+                          style: const TextStyle(
                             fontSize: 35,
-                            fontFamily: 'fatnumbers',
-                            color: SEColorScheme.black)), ]),
+                            fontFamily: 'groovy',
+                            color: SEColorScheme.black,
+                          ))
+                    ]),
+                    Stack(children: [
+                      Text(snapshot.data.toString(),
+                          style: TextStyle(
+                              fontSize: 35,
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 6
+                                ..color = SEColorScheme.white,
+                              fontFamily: 'fatnumbers')),
+                      Text(snapshot.data.toString(),
+                          style: const TextStyle(
+                              fontSize: 35,
+                              fontFamily: 'fatnumbers',
+                              color: SEColorScheme.black)),
+                    ]),
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,
                 ),
