@@ -87,11 +87,13 @@ TextStyle buttonTStyle = new TextStyle(
 class ButtonGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+          var totalwidth =MediaQuery.of(context).size.width;
     return Container(
-      child: Stack(alignment: Alignment.center, children: [
+
+      child: Stack(alignment: Alignment.bottomCenter, children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * .07,
-          width: MediaQuery.of(context).size.width * .55,
+          height:60,
+          width: MediaQuery.of(context).size.width/2,
           child: TextButton(
             onPressed: () {
               int score = 0;
@@ -117,16 +119,14 @@ class ButtonGame extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 53.0),
-          child: Container(
+      Container(
+        margin: EdgeInsets.only(left: totalwidth/8),
             child: Image.asset(
               "assets/icons/prize.png",
-              height: MediaQuery.of(context).size.height * .155,
+              height: 120,
             ),
-            alignment: Alignment.topLeft,
+            alignment: Alignment.bottomLeft, 
           ),
-        ),
       ]),
     );
   }
@@ -163,25 +163,33 @@ class ButtonStreakState extends State<ButtonStreak> {
               Container(
                 child: Row(
                   children: [Stack(children:[
-                    /*Text('Mejor Puntaje: ',
+                    Text('Mejor Puntaje: ',
                          style: TextStyle(
-        fontSize: 35,
-        foreground: Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 6
-          ..color = SEColorScheme.white, fontFamily: 'groovy'
-      )),*/Text('Mejor Puntaje: ',
+                          fontSize: 35,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 6
+                            ..color = SEColorScheme.white, fontFamily: 'groovy'
+      )),Text('Mejor Puntaje: ',
                         style: const TextStyle(
                           fontSize: 35,
                           fontFamily: 'groovy',
                           color: SEColorScheme.black,
                         ))
-                        ]),
+                        ]), Stack( children:[
+                            Text(snapshot.data.toString(),
+                         style: TextStyle(
+                          fontSize: 35,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 6
+                            ..color = SEColorScheme.white, fontFamily: 'fatnumbers'
+              )),
                     Text(snapshot.data.toString(),
                         style: const TextStyle(
                             fontSize: 35,
                             fontFamily: 'fatnumbers',
-                            color: SEColorScheme.black)),
+                            color: SEColorScheme.black)), ]),
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,
                 ),
