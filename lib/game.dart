@@ -630,7 +630,7 @@ void winToast() {
 
 void loseToast() {
   Fluttertoast.showToast(
-    msg: '¡Incorrecto! 🤡',
+    msg: 'Incorrecto 😞',
     toastLength: Toast.LENGTH_SHORT,
     gravity: ToastGravity.BOTTOM,
     backgroundColor: Colors.transparent,
